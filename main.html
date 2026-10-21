@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<base target="_blank">
+<title>M-klub Vysoké Mýto — program, vstupenky, kalendář</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#ecebe4;--ink:#0a0a0a;--acc:#7a04e1;--bg:var(--paper);--fg:var(--ink);--g:clamp(.75rem,2vw,1.5rem);--px:clamp(1rem,3vw,2.5rem);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0b0b0b;--ink:#ecebe4;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0b0b0b;--ink:#ecebe4;color-scheme:dark}
+html{scroll-behavior:smooth;scroll-padding-top:calc(56px + env(safe-area-inset-top,0px))}
+*{box-sizing:border-box;margin:0;padding:0;border-radius:0}
+body{background:var(--bg);color:var(--fg);font:400 clamp(.95rem,.9rem + .25vw,1.1rem)/1.5 Archivo,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:25}
+a{color:inherit;text-decoration:none}
+.m,.b,.hd nav a,.wd,.c{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;text-transform:uppercase;letter-spacing:.06em}
+.m{font-size:.72rem;font-weight:500;line-height:1.4}
+.inv{--bg:var(--ink);--fg:var(--paper);background:var(--bg);color:var(--fg)}
+.acc{--bg:var(--acc);--fg:#0a0a0a;background:var(--bg);color:var(--fg)}
+section,footer{padding:clamp(4rem,10vw,9rem) var(--px);border-top:1px solid var(--fg)}
+.g{display:grid;grid-template-columns:repeat(12,1fr);column-gap:var(--g)}
+/* header */
+.hd{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:56px;display:flex;background:var(--bg);border-bottom:1px solid var(--fg)}
+.logo{display:flex;align-items:center;padding:0 var(--px);font-weight:900;font-size:1.35rem;letter-spacing:-.04em;border-right:1px solid var(--fg)}
+.hd nav{display:flex;flex:1;overflow-x:auto;scrollbar-width:none}
+.hd nav a{display:flex;align-items:center;white-space:nowrap;padding:0 .95rem;font-size:.68rem;font-weight:500;border-right:1px solid var(--fg);transition:background .25s,color .25s}
+.hd nav a:hover{background:var(--fg);color:var(--bg)}
+.tix{display:flex;align-items:center;gap:.5rem;padding:0 var(--px);background:var(--acc);color:#0a0a0a;font-size:.72rem;font-weight:700;border-left:1px solid var(--fg);transition:background .25s,color .25s}
+.tix:hover{background:var(--fg);color:var(--bg)}
+.menu{display:none;padding:0 1rem;background:none;border:0;border-left:1px solid var(--fg);color:inherit;font:700 .72rem "JetBrains Mono",monospace;text-transform:uppercase}
+/* buttons */
+.b{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 1.15rem;border:1px solid var(--fg);background:none;color:inherit;font-size:.76rem;font-weight:700;line-height:1;cursor:pointer;transition:background .25s,color .25s}
+.b span{display:inline-block;transition:transform .3s}
+.b:hover{background:var(--fg);color:var(--bg)}.b:hover span{transform:translateX(5px)}
+.b.p{background:var(--acc);color:#0a0a0a}.b.p:hover{background:var(--fg);color:var(--bg)}
+.acc .b.p{background:#0a0a0a;color:var(--acc)}.acc .b.p:hover{background:transparent;color:#0a0a0a}
+.row{display:flex;flex-wrap:wrap;gap:.6rem}
+/* hero */
+.hero{padding-top:clamp(1.25rem,3vw,2.5rem);padding-bottom:clamp(2rem,5vw,4rem);border-top:0}
+.top{grid-column:1/-1;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding-bottom:.75rem;border-bottom:1px solid var(--fg)}
+h1{grid-column:1/-1;font-weight:900;font-size:clamp(2.5rem,24vw,22rem);line-height:.2;letter-spacing:-.065em;text-transform:uppercase;margin:clamp(1.5rem,4vw,3rem) 0 clamp(1rem,3vw,2rem) -.04em;white-space:nowrap}
+h4{grid-column:1/-1;font-weight:900;font-size:clamp(2.5rem,24vw,22rem);line-height:.8;letter-spacing:-.065em;text-transform:uppercase;margin:clamp(1.5rem,4vw,3rem) 0 clamp(1rem,3vw,2rem) -.04em;white-space:nowrap;color: transparent; -webkit-text-stroke: 3px white}
+
+.lead{grid-column:1/4;align-self:end;display:flex;flex-direction:column;gap:1.25rem}
+.lead p{font-size:1.05rem;max-width:32ch}
+.hart{grid-column:4/-1;position:relative;min-height:clamp(240px,40vw,600px);border:1px solid var(--fg);overflow:hidden;background:#0a0a0a}
+.hart i,.art i{position:absolute;inset:0;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.hart:hover i{transform:scale(1.05)}
+.hart .m{position:absolute;color:#ecebe4}
+.hart .cnt{position:absolute;right:0;bottom:0;background:var(--bg);color:var(--fg);padding:.6rem 1.1rem;display:flex;align-items:baseline;gap:.8rem}
+.cnt b{font-size:clamp(3rem,9vw,8rem);font-weight:900;line-height:.85;letter-spacing:-.06em}
+.tk{overflow:hidden;white-space:nowrap;background:var(--acc);color:#0a0a0a;border-top:1px solid #0a0a0a;border-bottom:1px solid #0a0a0a;padding:.7rem 0}
+.tk div{display:inline-block;animation:tk 40s linear infinite}
+.tk span{font-weight:900;font-size:clamp(1rem,2.2vw,1.6rem);letter-spacing:-.02em;text-transform:uppercase;padding-right:1.5rem}
+@keyframes tk{to{transform:translateX(-50%)}}
+/* patterns */
+.p1{background:repeating-linear-gradient(90deg,#0a0a0a 0 14px,var(--acc) 14px 28px)}
+.p2{background:conic-gradient(#0a0a0a 25%,#ecebe4 0 50%,#0a0a0a 0 75%,#ecebe4 0) 0 0/64px 64px}
+.p3{background:linear-gradient(var(--acc),var(--acc)) 72% 22%/42% 52% no-repeat,linear-gradient(90deg,rgba(236,235,228,.22) 1px,transparent 1px) 0 0/32px 32px,linear-gradient(rgba(236,235,228,.22) 1px,transparent 1px) 0 0/32px 32px,#0a0a0a}
+.p4{background:repeating-linear-gradient(135deg,var(--acc) 0 3px,transparent 3px 16px),#ecebe4}
+.p5{background:linear-gradient(#0a0a0a,#0a0a0a) 14% 14%/56% 56% no-repeat,linear-gradient(var(--acc),var(--acc)) 40% 40%/56% 56% no-repeat,#ecebe4}
+/* section heads */
+.sh{align-items:end;margin-bottom:clamp(2rem,5vw,4rem)}
+.sh .m{grid-column:1/4}
+h2{grid-column:4/-1;font-weight:900;font-size:clamp(2.6rem,9vw,8.5rem);line-height:.86;letter-spacing:-.05em;text-transform:uppercase}
+.flt{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.flt .b.on{background:var(--fg);color:var(--bg)}
+/* events */
+.ev{display:grid;grid-template-columns:repeat(12,1fr);column-gap:var(--g);padding:clamp(1.5rem,4vw,3rem) 0;border-top:1px solid var(--fg)}
+.ev .art{grid-column:1/6;grid-row:1;position:relative;overflow:hidden;border:1px solid var(--fg);aspect-ratio:4/5}
+.ev .bd{grid-column:6/13;grid-row:1;display:flex;flex-direction:column;gap:1.1rem}
+.ev:nth-child(even) .art{grid-column:8/13}.ev:nth-child(even) .bd{grid-column:1/8}
+.ev:hover .art i{transform:scale(1.07)}
+.art .m{position:absolute;top:.7rem;left:.7rem;background:var(--bg);color:var(--fg);padding:.25rem .5rem}
+.art .num{position:absolute;left:0;bottom:0;background:var(--bg);color:var(--fg);padding:.4rem 1rem .5rem;font-weight:900;font-size:clamp(3.5rem,9vw,8rem);line-height:.85;letter-spacing:-.06em}
+.num small{display:block;font:500 .72rem "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;margin-top:.4rem}
+.meta{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding-bottom:.7rem;border-bottom:1px solid var(--fg)}
+.now{background:var(--acc);color:#0a0a0a;padding:0 .4rem}
+h3{font-weight:800;font-size:clamp(1.7rem,4.2vw,3.9rem);line-height:.95;letter-spacing:-.035em;text-transform:uppercase;transition:letter-spacing .4s}
+.ev:hover h3{letter-spacing:-.02em}
+.bd p{max-width:46ch}
+dl{display:grid;grid-template-columns:auto 1fr;border-top:1px solid var(--fg);margin-top:auto}
+dt,dd{padding:.6rem 0;border-bottom:1px solid var(--fg)}dt{padding-right:2rem;opacity:.65}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .7s,transform .7s}.rv.in{opacity:1;transform:none}
+/* aktuálně */
+.news{align-items:stretch}
+.news .art{grid-column:1/6;position:relative;overflow:hidden;border:1px solid var(--fg);min-height:300px}
+.news .tx{grid-column:6/-1;display:flex;flex-direction:column;gap:1.25rem;justify-content:space-between}
+.news h2{grid-column:auto;font-size:clamp(2.4rem,7vw,6.5rem)}
+/* calendar */
+.cl{grid-column:1/6;display:flex;flex-direction:column;gap:1.5rem}
+.cl h2{grid-column:auto;font-size:clamp(2.6rem,7vw,6rem)}
+.cwrap{grid-column:6/-1}
+#cal{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--fg);border:1px solid var(--fg)}
+.wd,.c{background:var(--bg);font-size:.72rem;padding:.55rem}
+.wd{opacity:.6}
+.c{position:relative;aspect-ratio:1;font-weight:700;transition:background .25s,color .25s}
+.c.on{background:var(--acc);color:#0a0a0a}.c.on:hover{background:var(--fg);color:var(--bg)}
+.c.td::after{content:"";position:absolute;right:.5rem;top:.5rem;width:.5rem;height:.5rem;background:currentColor}
+.lg{display:flex;gap:1.5rem;flex-wrap:wrap}.lg i{display:inline-block;width:.8rem;height:.8rem;background:var(--acc);margin-right:.5rem;vertical-align:-1px}
+/* poster band */
+.pl{padding-block:clamp(3rem,8vw,7rem)}
+.pl h2{grid-column:1/-1;font-size:clamp(3rem,13vw,13rem);line-height:.82;margin-bottom:2rem}
+.pl .m{grid-column:1/6;align-self:center}.pl .row{grid-column:6/-1;justify-content:flex-end}
+/* tiles */
+.tl{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--fg);gap:1px;background:var(--fg)}
+.tl a{background:var(--bg);padding:1.25rem;min-height:clamp(150px,18vw,240px);display:flex;flex-direction:column;justify-content:space-between;transition:background .3s,color .3s}
+.tl a:hover{background:var(--fg);color:var(--bg)}
+.tl b{font-weight:900;font-size:clamp(1.6rem,4vw,3.4rem);letter-spacing:-.04em;text-transform:uppercase;line-height:.95}
+.tl a div{display:flex;justify-content:space-between}
+.tl a span{transition:transform .3s}.tl a:hover span{transform:translate(4px,-4px)}
+/* footer */
+footer .g{row-gap:3rem}
+.f1{grid-column:1/7}.f1 b{display:block;font-weight:900;font-size:clamp(2.2rem,6vw,5rem);line-height:.9;letter-spacing:-.05em;text-transform:uppercase;margin-bottom:1.25rem}
+.f2{grid-column:8/-1;display:flex;flex-direction:column;gap:1.25rem}
+.pt{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--fg);border:1px solid var(--fg)}
+.pt a{background:var(--bg);padding:1rem;font-weight:800;text-transform:uppercase;letter-spacing:-.02em;font-size:clamp(.85rem,2vw,1.4rem);transition:background .25s,color .25s}
+.pt a:hover{background:var(--fg);color:var(--bg)}
+.cr{grid-column:1/-1;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;opacity:.7}
+/* responsive */
+@media(max-width:900px){
+.hd nav{display:none;position:absolute;top:56px;left:0;right:0;flex-direction:column;background:var(--bg);border-bottom:1px solid var(--fg)}
+.hd.open nav{display:flex}.hd nav a{padding:1rem var(--px);border-right:0;border-bottom:1px solid var(--fg);font-size:.78rem}
+.menu{display:block}.tix{margin-left:auto}
+.lead,.hart,.sh .m,h2,.news .art,.news .tx,.cl,.cwrap,.f1,.f2,.pl .m,.pl .row{grid-column:1/-1}
+.lead{margin-bottom:1.5rem;order:2}.hart{order:1}
+.ev .art,.ev:nth-child(even) .art,.ev .bd,.ev:nth-child(even) .bd{grid-column:1/-1;grid-row:auto}
+.ev .art{aspect-ratio:16/11;margin-bottom:1.25rem}
+.sh .m{margin-bottom:1rem}.news .tx{margin-top:1.25rem}.cl{margin-bottom:2rem}
+.pl .row{justify-content:flex-start;margin-top:1.25rem}.tl{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){.hd .tix em{display:none}.pt{grid-template-columns:1fr 1fr}.b{padding:.85rem 1rem}.c,.wd{padding:.35rem;font-size:.66rem}.logo{font-size:1.15rem}h4{-webkit-text-stroke: 1px white;;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="hd" id="hd">
+  <a class="logo" href="logo.png" target="_self"></a>
+  <nav>
+    <a href="https://mklub.cz/index.php/aktualne">Aktuálně</a><a href="https://mklub.cz/index.php/fotogalerie">Fotogalerie</a><a href="https://mklub.cz/index.php/o-nas">O nás</a><a href="https://mklub.cz/index.php/kontakty">Kontakty</a><a href="https://mklub.cz/index.php/vylep-plakatu">Výlep plakátů</a><a href="https://mklub.cz/index.php/reference">Reference</a><a href="https://mklub.cz/index.php/pronajem-prostor">Prostory</a><a href="https://mklub.cz/index.php/akce-v-pronajmu">Akce v pronájmu</a>
+  </nav>
+  <a class="tix m" href="http://www.mklub.cz/tickets/"><em style="font-style:normal">Online&nbsp;</em>vstupenky ↗</a>
+  <button class="menu" id="mb" aria-label="Menu">Menu</button>
+</header>
+
+<main id="top">
+<section class="hero g">
+  <div class="top m"><span>Vysokomýtská kulturní, o.p.s.</span><span>Litomyšlská 72 — 566 01 Vysoké Mýto</span><span>Program 2026</span></div>
+  <h4>M-klub</h4>
+  <h1>M-klub</h1>
+  <h4>M-klub</h4>
+  <div class="lead">
+    <p>Koncerty, divadlo, kino, kurzy a besedy. Kulturní dům ve Vysokém Mýtě.</p>
+    <div class="row"><a class="b p" href="http://www.mklub.cz/tickets/">Online vstupenky <span>→</span></a><a class="b" href="#program" target="_self">Program <span>↓</span></a></div>
+  </div>
+  <div class="hart">
+    <i class="p3"></i>
+    <span class="m" style="top:.8rem;left:.8rem">Fig. 00 — hlavní plocha</span>
+    <span class="m" style="top:.8rem;right:.8rem">49.95°N 16.16°E</span>
+    <div class="cnt"><b id="cnt">05</b><span class="m">akcí<br>v programu</span></div>
+  </div>
+</section>
+
+<div class="tk" aria-hidden="true"><div id="tk"></div></div>
+
+<section class="acc" id="aktualne">
+  <div class="g news">
+    <div class="art"><i class="p2"></i><span class="m">Aktuálně — nové</span></div>
+    <div class="tx">
+      <span class="m">Čtvrtek / jednou za 14 dní / hospodský kvíz</span>
+      <h2>Startujeme pravidelné M-kvízy!</h2>
+      <p style="max-width:44ch">Přihlašte se na nové hospodské kvízy v M-klubu. Pořádáme ve čtvrtek jednou za 14 dní!</p>
+      <div class="row"><a class="b p" href="https://mklub.cz/index.php/aktualne/item/3770-stratujeme-pravidelne-m-kvizy">Více info <span>→</span></a></div>
+    </div>
+  </div>
+</section>
+
+<section id="program">
+  <div class="g sh"><span class="m">§ 01 — Program</span><h2>Co se chystá</h2></div>
+  <div class="flt" id="flt"></div>
+  <div id="list"></div>
+</section>
+
+<section class="inv" id="kalendar">
+  <div class="g">
+    <div class="cl">
+      <span class="m">§ 02 — Kalendář akcí</span>
+      <h2 id="mn">Říjen</h2>
+      <div class="row"><button class="b" id="pv">← Předchozí</button><button class="b" id="nx">Další →</button></div>
+      <div class="lg m"><span><i></i>Den s akcí</span><span>▪ Dnes</span></div>
+      <p style="max-width:36ch;opacity:.8">Klikněte na zvýrazněný den a zobrazí se akce na webu M-klubu.</p>
+    </div>
+    <div class="cwrap"><div id="cal"></div></div>
+  </div>
+</section>
+
+<section class="acc pl">
+  <div class="g">
+    <h2>Výlep plakátů</h2>
+    <span class="m">§ 03 — Služba / plakátovací plochy ve městě</span>
+    <div class="row"><a class="b p" href="https://mklub.cz/index.php/vylep-plakatu">Výlep plakátů <span>→</span></a><a class="b" href="mailto:mklub@mklub.cz">Napsat <span>→</span></a></div>
+  </div>
+</section>
+
+<section>
+  <div class="g sh"><span class="m">§ 04 — Rubriky</span><h2>Vyberte si žánr</h2></div>
+  <div class="tl">
+    <a href="https://mklub.cz/index.php/koncerty"><div class="m"><span>A1</span><span>↗</span></div><b>Koncerty</b></a>
+    <a href="https://mklub.cz/index.php/divadlo"><div class="m"><span>A2</span><span>↗</span></div><b>Divadlo</b></a>
+    <a href="https://mklub.cz/index.php/kino"><div class="m"><span>A3</span><span>↗</span></div><b>Kino</b></a>
+    <a href="https://mklub.cz/index.php/kurzy"><div class="m"><span>B1</span><span>↗</span></div><b>Kurzy</b></a>
+    <a href="https://mklub.cz/index.php/besedy"><div class="m"><span>B2</span><span>↗</span></div><b>Besedy / Přednášky</b></a>
+    <a href="https://mklub.cz/index.php/aktualne/item/2691-jarmarky-vysoke-myto"><div class="m"><span>B3</span><span>↗</span></div><b>Jarmarky</b></a>
+  </div>
+</section>
+</main>
+
+<footer class="inv">
+  <div class="g">
+    <div class="f1">
+      <b>M-klub<br>Vysoké Mýto</b>
+      <p>Litomyšlská 72<br>566 01 Vysoké Mýto<br><a href="tel:465420420">tel.: 465 420 420</a><br><a href="mailto:mklub@mklub.cz">mklub@mklub.cz</a></p>
+    </div>
+    <div class="f2">
+      <span class="m">Sledujte nás</span>
+      <div class="row">
+        <a class="b" href="https://www.facebook.com/profile.php?id=61575567497951">Facebook <span>↗</span></a>
+        <a class="b" href="https://www.instagram.com/mklub_vysoke_myto?igsh=a3FxdzBkeHp5cHRt">Instagram <span>↗</span></a>
+        <a class="b" href="https://www.youtube.com/user/MklubVM#p/u">YouTube <span>↗</span></a>
+        <a class="b" href="http://bandzone.cz/klub/mklubvysokemyto">Bandzone <span>↗</span></a>
+        <a class="b" href="https://goo.gl/maps/sVgNCXQQx4Q2">Mapa <span>↗</span></a>
+      </div>
+      <div class="row"><a class="b p" href="https://mklub.cz/">Odebírat novinky <span>→</span></a><a class="b" href="http://vmkulturni.cz">Vysokomýtská kulturní <span>↗</span></a></div>
+    </div>
+    <div class="pt">
+      <a href="http://www.vysoke-myto.cz">Město Vysoké Mýto</a><a href="http://www.ecos.cz/">ECOS</a><a href="https://www.poda.cz/">PODA</a>
+      <a href="http://www.tvarmetal.cz/">Tvar Metal</a><a href="http://www.iveco.com/czech/Pages/HomePage.aspx">IVECO</a><a href="http://www.vodovody-vm.cz/">VaK</a>
+      <a href="http://www.elkovalenta.cz/">Euronics</a><a href="https://www.koma-vm.cz/cs">KOMA</a><a href="http://www.my-concept.cz/">Concept</a>
+    </div>
+    <div class="cr m"><span>Copyright © mklub.cz</span><span>Původní grafický návrh © rsdialog.cz</span><span>Redesign — koncept</span></div>
+  </div>
+</footer>
+
+<script>
+const T="http://www.mklub.cz/tickets/",O="https://mklub.cz/index.php/";
+const E=[
+{iso:"2026-10-21",t:"19:00",c:"Divadlo",w:"středa",d:"21",m:"říj",title:"ADF – Peter Quilter: Tak já letim!",desc:"Vše se dá přežít s nadhledem, sebeironií a humorem.",price:"580 / 560 / 540 Kč",place:"Šemberovo divadlo",url:O+"divadlo/item/3594-21-rijna-v-19-00-semberovo-divadlo-adf-peter-quilter-tak-ja-letim"},
+{iso:"2026-11-06",t:"19:00",c:"Koncerty",w:"pátek",d:"06",m:"lis",title:"Lucie Bílá – recitál",desc:"Recitál několikanásobné zlaté slavice Lucie Bílé za klavírního doprovodu Petra Maláska.",price:"1590 / 1570 / 1550 Kč",place:"Vysoké Mýto",url:O+"koncerty/item/3609-lucie-bila-recital"},
+{iso:"2026-11-14",t:"17:00",c:"Besedy",w:"sobota",d:"14",m:"lis",title:"Snow Film Fest | Háčkova přednáška „SNOW“",desc:"1. ročník Snow film festu ve Vysokém Mýtě. Součástí bude přednáška horolezce, skialpinisty a dobrodruha Zdeňka „Háčka“ Háka nazvaná SNOW.",price:"předprodej 200 Kč / na místě 250 Kč",place:"Vysoké Mýto",url:O+"besedy/item/3778-snow-film-fest"},
+{iso:"2026-11-19",t:"20:00",c:"Divadlo",w:"čtvrtek",d:"19",m:"lis",title:"LiStOVáNí: Deník lehké holky (Celeste Will)",desc:"Cyklus scénických čtení aneb knížky na jevišti. Hrají: Daniela Šišková a Jakub Koudela.",price:"předprodej 190 Kč / na místě 240 Kč",place:"Vysoké Mýto",url:O+"divadlo/item/3807-listovani-denik-lehke-holky"},
+{iso:"2026-11-22",t:"19:00",c:"Koncerty",w:"neděle",d:"22",m:"lis",title:"Dan Bárta & Illustratosphere & Lash & Grey",desc:"Stříbrná svatba tour 2026. Exkluzivní koncert v M-klubu!",price:"550 Kč (prvních 100 ks) / 670 Kč (dalších 100 ks) / 770 Kč (posledních 100 ks)",place:"M-klub",url:O+"koncerty/item/3721-dan-barta-illustratosphere-lash-grey"}
+];
+const $=s=>document.querySelector(s);
+const today=new Date().toLocaleDateString("sv-SE");
+E.forEach((e,i)=>{e.n=String(i+1).padStart(2,"0");e.p="p"+(i%5+1)});
+const U=E.filter(e=>e.iso>=today);
+$("#cnt").textContent=String(U.length).padStart(2,"0");
+$("#tk").innerHTML=("<span>Koncerty ■</span><span>Divadlo ■</span><span>Kino ■</span><span>Kurzy ■</span><span>Besedy ■</span><span>Jarmarky ■</span>").repeat(8);
+let f="Vše";
+const io="IntersectionObserver" in window?new IntersectionObserver(r=>r.forEach(x=>{if(x.isIntersecting){x.target.classList.add("in");io.unobserve(x.target)}}),{threshold:.12}):null;
+function draw(){
+  const L=U.filter(e=>f==="Vše"||e.c===f);
+  $("#list").innerHTML=L.length?L.map(e=>`<article class="ev rv">
+  <div class="art"><i class="${e.p}"></i><span class="m">Fig. ${e.n}</span><div class="num">${e.d}<small>${e.m} 2026</small></div></div>
+  <div class="bd">
+    <div class="meta m"><span>Track ${e.n}</span><span>${e.c}</span><span>${e.w} · ${e.t}${e.iso===today?' <b class="now">Dnes</b>':''}</span></div>
+    <h3>${e.title}</h3><p>${e.desc}</p>
+    <dl class="m"><dt>Místo</dt><dd>${e.place}</dd><dt>Vstupné</dt><dd>${e.price}</dd></dl>
+    <div class="row"><a class="b p" href="${T}">Objednat vstupenky <span>→</span></a><a class="b" href="${e.url}">Více info <span>→</span></a></div>
+  </div></article>`).join(""):'<p class="m" style="padding:2rem 0;border-top:1px solid">V této rubrice zatím nic není. Zkuste jinou.</p>';
+  document.querySelectorAll(".rv").forEach(el=>io?io.observe(el):el.classList.add("in"));
+}
+$("#flt").innerHTML=["Vše","Koncerty","Divadlo","Besedy"].map(c=>`<button class="b${c===f?" on":""}" data-c="${c}">${c}</button>`).join("");
+$("#flt").onclick=e=>{const b=e.target.closest("button");if(!b)return;f=b.dataset.c;document.querySelectorAll("#flt .b").forEach(x=>x.classList.toggle("on",x===b));draw()};
+draw();
+const M=[[2026,9,"Říjen"],[2026,10,"Listopad"]];let mi=0;
+function cal(){
+  const[y,m,n]=M[mi],ev=new Set(E.filter(e=>+e.iso.slice(5,7)===m+1).map(e=>+e.iso.slice(8)));
+  if(m===9)[1,13,21,22,25,27,28,29,31].forEach(d=>ev.add(d));
+  const first=(new Date(y,m,1).getDay()+6)%7,len=new Date(y,m+1,0).getDate(),t=new Date();
+  let h=["Po","Út","St","Čt","Pá","So","Ne"].map(d=>`<div class="wd">${d}</div>`).join("")+'<div class="c"></div>'.repeat(first);
+  for(let d=1;d<=len;d++){
+    const td=t.getFullYear()===y&&t.getMonth()===m&&t.getDate()===d?" td":"";
+    h+=ev.has(d)?`<a class="c on${td}" href="${O}itemlist/date/${y}/${m+1}/${d}">${d}</a>`:`<div class="c${td}">${d}</div>`;
+  }
+  $("#cal").innerHTML=h;$("#mn").textContent=n+" "+y;
+  $("#pv").style.opacity=mi===0?.35:1;$("#nx").style.opacity=mi===M.length-1?.35:1;
+}
+$("#pv").onclick=()=>{if(mi>0){mi--;cal()}};
+$("#nx").onclick=()=>{if(mi<M.length-1){mi++;cal()}};
+cal();
+$("#mb").onclick=()=>$("#hd").classList.toggle("open");
+document.querySelectorAll(".hd nav a").forEach(a=>a.addEventListener("click",()=>$("#hd").classList.remove("open")));
+</script>
+</body>
+</html>
